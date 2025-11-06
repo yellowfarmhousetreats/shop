@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1915,9 +1916,22 @@ h1, h2, h3, h4, h5, h6 {
             const selectedOption = document.querySelector('input[name="dietary-choice"]:checked');
             if (!selectedOption) return;
 
-            // 🔴 DIETARY MINIMUM - Block if restricted item + custom dietary + qty < 6
-            const restrictedItems = ['Chocolate Lava', 'Oatmeal', 'Brownies - Large'];
-            const isRestricted = restrictedItems.some(item => pendingCartItem.name.includes(item));
+            // 🔴 DIETARY MINIMUM VALIDATION - CORRECT VERSION
+            // Check the itemKey (flavor/product that needs dietary), not the product name
+            // We need to find which dietary option triggered this modal
+            const dietaryMapKeys = Object.keys(dietaryOptionsMap);
+            const currentItemKey = dietaryMapKeys.find(key => 
+                pendingCartItem.name.includes(key.replace(/[*^]/g, '').trim())
+            );
+
+            console.log('Item Key:', currentItemKey);
+            console.log('Quantity:', pendingCartItem.quantity);
+            console.log('Dietary Selected:', selectedOption.value);
+
+            // Restricted items (need 6+): Chocolate Lava, Oatmeal, Brownies - Large
+            // Allowed items (no restriction): Apple Crisp, Pumpkin Crisp
+            const restrictedKeys = ['Chocolate Lava*^', 'Oatmeal*', 'Brownies - Large'];
+            const isRestricted = restrictedKeys.some(key => currentItemKey && currentItemKey.includes(key.replace(/[*^]/g, '')));
 
             if (isRestricted && selectedOption.value !== 'regular' && pendingCartItem.quantity < 6) {
                 alert('❌ DIETARY CUSTOM ORDERS - MINIMUM 6 REQUIRED\n\nThis item requires at least 6 when ordered with dietary options.\n\nPlease select Half Dozen (6) or Dozen (12).\n\nThank you!');
