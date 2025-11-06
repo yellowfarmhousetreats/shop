@@ -1045,11 +1045,12 @@ h1, h2, h3, h4, h5, h6 {
 <script src="https://snapwidget.com/js/snapwidget.js"></script>
 <iframe src="https://snapwidget.com/embed/1112031" class="snapwidget-widget" allowtransparency="true" frameborder="0" scrolling="no" style="border:none; overflow:hidden;  width:50%; " title="Posts from Instagram"></iframe>
                 
-                <div style="text-align: center; padding: 40px 20px; background: #f9f9f9; border-radius: 8px;">
+                <div id="instagram-feed-section" style="text-align: center; padding: 40px 20px; background: #f9f9f9; border-radius: 8px; margin: 30px 0;">
+                    <h2 style="color: var(--farmhouse-brown); margin-bottom: 20px;">Follow Our Latest Updates</h2>
                     <p style="font-size: 18px; margin-bottom: 20px; color: var(--farmhouse-brown);">
                         🌻 Check out our latest baked goods on Instagram!
                     </p>
-                    <a href="https://www.instagram.com/yellowfarmhousestand/" target="_blank" rel="noopener noreferrer" class="btn-follow-instagram">
+                    <a href="https://www.instagram.com/yellowfarmhousestand/" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 30px; background: #f4c430; color: #5e5240; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px auto;">
                         View Our Instagram Feed
                     </a>
                     <p style="font-size: 14px; margin-top: 15px; color: #666;">
@@ -2891,5 +2892,47 @@ ${currentOrderData.email ? 'Email: ' + currentOrderData.email : ''}
         // Initialize
         renderProducts();
     </script>
+
+        <script>
+
+        // Control Instagram feed visibility based on page state
+        function hideInstagramFeed() {
+            const feed = document.getElementById('instagram-feed-section');
+            if (feed) feed.style.display = 'none';
+        }
+
+        function showInstagramFeed() {
+            const feed = document.getElementById('instagram-feed-section');
+            if (feed) feed.style.display = 'block';
+        }
+
+        // Intercept checkout function
+        const originalProceedCheckout = window.proceedToCheckout;
+        window.proceedToCheckout = function() {
+            hideInstagramFeed();
+            if (originalProceedCheckout) {
+                originalProceedCheckout.call(this);
+            }
+        };
+
+        // Intercept continue shopping
+        const originalContinueShopping = window.continueShopping;
+        window.continueShopping = function() {
+            showInstagramFeed();
+            if (originalContinueShopping) {
+                originalContinueShopping.call(this);
+            }
+        };
+
+        // Intercept success page display
+        const originalShowSuccessPage = window.showSuccessPage;
+        window.showSuccessPage = function() {
+            hideInstagramFeed();
+            if (originalShowSuccessPage) {
+                originalShowSuccessPage.call(this);
+            }
+        };
+
+        </script>
 </body>
 </html>
