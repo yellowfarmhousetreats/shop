@@ -1386,7 +1386,7 @@ h1, h2, h3, h4, h5, h6 {
         <p>📞 (805) 709-4686</p>
         <p>📱 Facebook &amp; Instagram @yellowfarmhousegirl</p>
         <p style="margin-top: 12px; font-style: italic;">Please feel free to call, text or message specific details.</p>
-        <p style="margin-top: 8px;"><strong>Closed Sundays</strong></p>
+        <p style="margin-top: 8px;"><strong>Open 7 Days a Week, 11am–Sunset</strong></p>
         <div class="footer-disclaimer">
             <p>This form allows online ordering. A 50% deposit is required to confirm your order. Final payment due at pickup.</p>
         </div>
@@ -1574,7 +1574,7 @@ h1, h2, h3, h4, h5, h6 {
                     {
                         name: 'Cookies - Complex',
                         description: '',
-                        flavors: ["S'more", 'Monster', 'Peanut Butter Cup Stuffed'],
+                        flavors: ["S'more", 'Monster', 'Peanut Butter Cup Stuffed', 'Caramel Apple Pie'],
                         pricing: [
                             { label: 'Single', price: 5 },
                             { label: 'Half Dozen', price: 25 },
@@ -1802,37 +1802,13 @@ h1, h2, h3, h4, h5, h6 {
             const quantityInput = document.getElementById(`${productId}-quantity`);
             const quantity = parseInt(quantityInput.value) || 1;
 
-            // Check if dietary option is selected (items with dietary customization)
-            const dietarySelect = document.getElementById(`${productId}-dietary`);
-            if (dietarySelect && dietarySelect.value && dietarySelect.value !== 'regular') {
-                // Products that require minimum 6 or 12 for custom dietary orders
-                const dietaryMinProducts = [
-                    'Muffins', 'Cupcakes', 'Brownies - Large', 'Fruit Pies', 'Cookies - Simple'
-                ];
-
-                const isDietaryProduct = dietaryMinProducts.some(p => item.name.includes(p));
-
-                if (isDietaryProduct && quantity === 1) {
-                    alert('📋 Dietary Customization Note:\n\nFor custom dietary orders, we require a minimum of 6 or 12 items to make baking efficient and cost-effective.\n\nPlease select "Half Dozen" (6) or "Dozen" (12) quantity.');
-                    return; // Don't add to cart
-                }
-            }
-
             
-
-            // 🔶 DIETARY CUSTOMIZATION MINIMUM
-            // Products with dietary options require minimum 6 or 12 quantity
-            const dietarySelect = document.getElementById(`${productId}-dietary`);
-            if (dietarySelect && dietarySelect.value && dietarySelect.value !== 'regular') {
-                const minRequiredProducts = ['Muffins', 'Cupcakes', 'Brownies', 'Fruit Pies', 'Cookies'];
-                const isMinRequired = minRequiredProducts.some(p => item.name.includes(p));
-
-                if (isMinRequired && quantity === 1) {
-                    alert('📋 Custom Dietary Orders - Minimum Quantity\n\nDue to baking and cost considerations, dietary-customized items must be ordered in minimum quantities:\n- Half Dozen (6) or\n- Dozen (12)\n\nPlease select a larger quantity. Thank you!');
-                    return; // Stop here, don't add to cart
-                }
-            }
-
+    // Enforce dietary minimum
+    const dietarySelect = document.getElementById(`${productId}-dietary`);
+    if (dietarySelect && dietarySelect.value && dietarySelect.value !== 'regular' && quantity < 6) {
+        alert('Custom dietary orders require at least 6 of the same item!');
+        return;
+    }
 let selectedFlavor = '';
             const flavorSelect = document.getElementById(`${productId}-flavor`);
             if (flavorSelect) {
@@ -2922,5 +2898,7 @@ ${currentOrderData.email ? 'Email: ' + currentOrderData.email : ''}
         // Initialize
         renderProducts();
     </script>
+
+<!-- Pretzel Combo Builder Modal here (to be expanded by dev) -->
 </body>
 </html>
