@@ -221,13 +221,153 @@ body {
   }
 }
 
-.header-subtitle {
-  text-align: center;
-  padding: 8px 20px;
-  background: rgba(255, 255, 255, 0.9);
+/* ==================== HEADER FILTERS ==================== */
+.header-filters-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.filters-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  color: #2c3e50;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filters-toggle:hover {
+  background: rgba(139, 115, 85, 0.1);
+}
+
+.filters-toggle:active {
+  background: rgba(139, 115, 85, 0.2);
+}
+
+.toggle-text {
+  font-size: 0.9em;
+}
+
+.header-filters {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  background: #fff;
+}
+
+.header-filters.open {
+  max-height: 400px;
+  border-top: 1px solid #d4c5b9;
+}
+
+.filter-categories {
+  display: flex;
+  gap: 8px;
+  padding: 15px 20px 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filter-cat-btn {
+  padding: 10px 20px;
+  background: #f5f1e8;
+  border: 2px solid #d4c5b9;
+  border-radius: 20px;
   color: #2c3e50;
   font-size: 0.95em;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.filter-cat-btn:hover {
+  background: #ede8df;
+  border-color: #8b7355;
+}
+
+.filter-cat-btn.active {
+  background: linear-gradient(135deg, #8b7355 0%, #b87220 100%);
+  color: #fff;
+  border-color: #8b7220;
+}
+
+.filter-dietary {
+  display: flex;
+  gap: 15px;
+  padding: 10px 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.dietary-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+  min-height: 44px;
+}
+
+.dietary-toggle:hover {
+  background: rgba(139, 115, 85, 0.05);
+}
+
+.dietary-toggle input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.dietary-icon {
+  font-size: 1.3em;
+  line-height: 1;
+}
+
+.dietary-label {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.nut-warning {
+  padding: 12px 20px;
+  background: #fff3cd;
+  border-top: 1px solid #ffc107;
+  color: #856404;
+  font-size: 0.85em;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Desktop adjustments */
+@media (min-width: 768px) {
+  .filter-categories {
+    gap: 12px;
+  }
+
+  .filter-cat-btn {
+    padding: 10px 24px;
+    font-size: 1em;
+  }
+
+  .filter-dietary {
+    gap: 20px;
+  }
+
+  .dietary-label {
+    font-size: 0.95em;
+  }
 }
 
 .contact-info {

@@ -65,7 +65,53 @@
             >
           </a>
         </div>
-        <div class="header-subtitle">Fresh Baked Goods</div>
+        <div class="header-filters-container">
+          <button
+            class="filters-toggle"
+            onclick="toggleFilters()"
+            aria-label="Toggle search and filters"
+          >
+            🔍 <span class="toggle-text">Search & Filter</span>
+          </button>
+          <div class="header-filters" id="headerFilters">
+            <div class="filter-categories">
+              <button
+                class="filter-cat-btn active"
+                data-filter-category="all"
+                onclick="selectHeaderCategory('all')"
+              >
+                Everything
+              </button>
+              <button
+                class="filter-cat-btn"
+                data-filter-category="Candy"
+                onclick="selectHeaderCategory('Candy')"
+              >
+                Candy
+              </button>
+              <button
+                class="filter-cat-btn"
+                data-filter-category="Cookie"
+                onclick="selectHeaderCategory('Cookie')"
+              >
+                Cookies
+              </button>
+            </div>
+            <div class="filter-dietary">
+              <label class="dietary-toggle">
+                <input type="checkbox" id="header-filter-gf" onchange="syncDietaryFilters()" />
+                <span class="dietary-icon">🚫🌾</span>
+                <span class="dietary-label">Gluten-Free</span>
+              </label>
+              <label class="dietary-toggle">
+                <input type="checkbox" id="header-filter-sf" onchange="syncDietaryFilters()" />
+                <span class="dietary-icon">🚫🧊</span>
+                <span class="dietary-label">Sugar-Free</span>
+              </label>
+            </div>
+            <div class="nut-warning">⚠️ All items made in a kitchen that processes nuts</div>
+          </div>
+        </div>
       </header>
       <!-- ========== INSTAGRAM FEED - SHOWCASED UNDER HEADER ========== -->
       <div class="instagram-showcase">
@@ -101,7 +147,11 @@
         <div class="step-container">
           <div class="section-title">📦 Step 1: Select Your Items</div>
 
-          <div class="note-box"><strong>Note:</strong> Most items contain gluten and sugar.</div>
+          <div class="note-box">
+            <strong>Note:</strong> Most items contain gluten and sugar.<br />
+            <strong>⚠️ Allergy Warning:</strong> All items are made in a kitchen that processes
+            nuts.
+          </div>
 
           <!-- PRODUCT CONTROLS -->
           <div class="product-controls">
@@ -118,8 +168,8 @@
               <!-- Category tabs will be generated here -->
             </div>
             <div class="dietary-filters">
-              <label><input type="checkbox" id="filter-gf" /> Show only Gluten-Free options</label>
-              <label><input type="checkbox" id="filter-sf" /> Show only Sugar-Free options</label>
+              <label><input type="checkbox" id="filter-gf" /> 🚫🌾 Gluten-Free</label>
+              <label><input type="checkbox" id="filter-sf" /> 🚫🧊 Sugar-Free</label>
             </div>
             <div class="loading-spinner hidden" id="loadingSpinner">
               <div class="spinner"></div>
@@ -227,12 +277,79 @@
         }
       }
 
+      // Toggle filters panel
+      function toggleFilters() {
+        const panel = document.getElementById("headerFilters");
+        const toggle = document.querySelector(".filters-toggle");
+        if (panel.classList.contains("open")) {
+          panel.classList.remove("open");
+          toggle.setAttribute("aria-expanded", "false");
+        } else {
+          panel.classList.add("open");
+          toggle.setAttribute("aria-expanded", "true");
+        }
+      }
+
+      // Select category from header filters
+      function selectHeaderCategory(category) {
+        // Update header button states
+        document.querySelectorAll(".filter-cat-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.filterCategory === category);
+        });
+
+        // Sync with main category tabs
+        const mainTabs = document.querySelectorAll(".tab-button");
+        mainTabs.forEach((tab) => {
+          if (tab.dataset.category === category) {
+            tab.classList.add("active");
+            tab.click();
+          } else {
+            tab.classList.remove("active");
+          }
+        });
+
+        // Sync select dropdown
+        const select = document.getElementById("categorySelect");
+        if (select) select.value = category;
+      }
+
+      // Sync dietary filters between header and main controls
+      function syncDietaryFilters() {
+        const headerGF = document.getElementById("header-filter-gf");
+        const headerSF = document.getElementById("header-filter-sf");
+        const mainGF = document.getElementById("filter-gf");
+        const mainSF = document.getElementById("filter-sf");
+
+        if (mainGF) mainGF.checked = headerGF.checked;
+        if (mainSF) mainSF.checked = headerSF.checked;
+
+        // Trigger filter update
+        if (typeof filterAndDisplay === "function") {
+          filterAndDisplay();
+        }
+      }
+
       // Initialize on page load
       document.addEventListener("DOMContentLoaded", function () {
         updateCartBadge();
 
-        // Test alert to verify it works
-        console.log("Page loaded, cart functions available");
+        // Sync main filters to header when they change
+        const mainGF = document.getElementById("filter-gf");
+        const mainSF = document.getElementById("filter-sf");
+        if (mainGF) {
+          mainGF.addEventListener("change", () => {
+            const headerGF = document.getElementById("header-filter-gf");
+            if (headerGF) headerGF.checked = mainGF.checked;
+          });
+        }
+        if (mainSF) {
+          mainSF.addEventListener("change", () => {
+            const headerSF = document.getElementById("header-filter-sf");
+            if (headerSF) headerSF.checked = mainSF.checked;
+          });
+        }
+
+        console.log("Page loaded, cart and filters available");
       });
     </script>
   </body>
