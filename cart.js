@@ -9,7 +9,7 @@ function addToCart(index) {
   const glutenFree = document.getElementById(`gluten-${index}`)?.checked || false;
   const sugarFree = document.getElementById(`sugar-${index}`)?.checked || false;
 
-  let price = item.sizePrice[size];
+  let price = item.sizePrice[size.replaceAll(' ', '_')];
   let totalPrice = price * qty;
 
   const cartItem = {
