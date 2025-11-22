@@ -36,91 +36,195 @@ async function initializeProducts() {
   let globalIndex = 0;
 
   for (const category of Object.keys(productsByCategory)) {
-    // Create category section
-    const section = document.createElement("div");
-    section.className = "category-section";
+    const items = productsByCategory[category];
+    const sectionResult = createCategorySection(category, items, globalIndex);
+    grid.appendChild(sectionResult.node);
+    globalIndex = sectionResult.nextIndex;
+  }
+}
 
-    const title = document.createElement("h2");
-    title.className = "category-title";
-    title.textContent = category;
-    section.appendChild(title);
+function createCategorySection(category, items, startIndex) {
+  const section = document.createElement("div");
+  section.className = "category-section";
 
-    const categoryGrid = document.createElement("div");
-    categoryGrid.className = "products-grid";
+  const title = document.createElement("h2");
+  title.className = "category-title";
+  title.textContent = category;
+  section.appendChild(title);
 
-    for (const item of productsByCategory[category]) {
-      const defaultPrice = item.basePrice || item.sizePrice[item.sizes[0]];
+  const categoryGrid = document.createElement("div");
+  categoryGrid.className = "products-grid";
 
-      const card = document.createElement("div");
-      card.className = "product-card";
-      card.innerHTML = `
-        ${item.image ? `<div class="product-image"><img src="${item.image}" alt="${item.name}"></div>` : ''}
-        <div class="product-header">
-          <div class="product-name">${item.name}</div>
-          <div class="product-price">from $${defaultPrice.toFixed(2)}</div>
-        </div>
-        <div class="product-form">
-          <div class="form-group">
-            <label>Size:</label>
-            <select id="size-${globalIndex}" class="size-select" onchange="updatePrice(${globalIndex})">
-              ${item.sizes
-                .map((size) => `<option value="${size}">${size}</option>`)
-                .join("")}
-            </select>
-          </div>
-          ${
-            item.flavors && item.flavors.length > 0
-              ? `
-            <div class="form-group">
-              <label>Flavor:</label>
-              <select id="flavor-${globalIndex}" class="flavor-select" onchange="updateDietaryOptions(${globalIndex})">
-                ${item.flavors
-                  .map((flavor) => `<option value="${flavor}">${flavor}</option>`)
-                  .join("")}
-              </select>
-            </div>
-          `
-              : ""
-          }
-          ${
-            item.flavorNotes
-              ? `
-            <div class="form-group">
-              <label>Flavor Notes:</label>
-                <input type="text" id="notes-${globalIndex}" class="flavor-notes" placeholder="Optional flavor preferences">
-              </div>
-          `
-              : ""
-          }
-          <div class="form-group">
-            <label>Quantity:</label>
-            <input type="number" id="qty-${globalIndex}" class="quantity-input" min="1" value="1">
-          </div>
-          <div class="dietary-section" id="dietary-${globalIndex}">
-            <div class="dietary-checkboxes">
-              <div class="dietary-option" id="gluten-option-${globalIndex}">
-                <input type="checkbox" id="gluten-${globalIndex}" class="gluten-checkbox">
-                <label for="gluten-${globalIndex}">Gluten Free</label>
-              </div>
-              <div class="dietary-option" id="sugar-option-${globalIndex}">
-                <input type="checkbox" id="sugar-${globalIndex}" class="sugar-checkbox">
-                <label for="sugar-${globalIndex}">Sugar Free</label>
-              </div>
-            </div>
-          </div>
-          <button class="add-to-cart-btn" onclick="addToCart(${globalIndex})">Add to Cart</button>
-        </div>
-      `;
-      categoryGrid.appendChild(card);
-      updateDietaryOptions(globalIndex);
-      globalIndex++;
-    }
-
-    section.appendChild(categoryGrid);
-    grid.appendChild(section);
+  let index = startIndex;
+  for (const item of items) {
+    const card = createProductCard(item, index);
+    categoryGrid.appendChild(card);
+    updateDietaryOptions(index);
+    index++;
   }
 
-  // Removed dietary filtering as dietary tags are no longer in JSON
+  section.appendChild(categoryGrid);
+  return { node: section, nextIndex: index };
+}
+
+function createProductCard(item, index) {
+  const defaultPrice = getDefaultPrice(item);
+
+  const card = document.createElement("div");
+  card.className = "product-card";
+
+  if (item.image) {
+    const imgWrap = document.createElement("div");
+    imgWrap.className = "product-image";
+    const img = document.createElement("img");
+    img.src = item.image;
+    img.alt = item.name || "";
+    imgWrap.appendChild(img);
+    card.appendChild(imgWrap);
+  }
+
+  const header = document.createElement("div");
+  header.className = "product-header";
+  const nameDiv = document.createElement("div");
+  nameDiv.className = "product-name";
+  nameDiv.textContent = item.name;
+  const priceDiv = document.createElement("div");
+  priceDiv.className = "product-price";
+  priceDiv.textContent = `from $${defaultPrice.toFixed(2)}`;
+  header.appendChild(nameDiv);
+  header.appendChild(priceDiv);
+  card.appendChild(header);
+
+  const form = document.createElement("div");
+  form.className = "product-form";
+
+  // Size select
+  const sizeGroup = document.createElement("div");
+  sizeGroup.className = "form-group";
+  const sizeLabel = document.createElement("label");
+  sizeLabel.textContent = "Size:";
+  const sizeSelect = document.createElement("select");
+  sizeSelect.id = `size-${index}`;
+  sizeSelect.className = "size-select";
+  sizeSelect.addEventListener("change", () => updatePrice(index));
+  for (const size of item.sizes) {
+    const opt = document.createElement("option");
+    opt.value = size;
+    opt.textContent = size;
+    sizeSelect.appendChild(opt);
+  }
+  sizeGroup.appendChild(sizeLabel);
+  sizeGroup.appendChild(sizeSelect);
+  form.appendChild(sizeGroup);
+
+  // Flavor select (optional)
+  if (item.flavors && item.flavors.length > 0) {
+    const flavorGroup = document.createElement("div");
+    flavorGroup.className = "form-group";
+    const flavorLabel = document.createElement("label");
+    flavorLabel.textContent = "Flavor:";
+    const flavorSelect = document.createElement("select");
+    flavorSelect.id = `flavor-${index}`;
+    flavorSelect.className = "flavor-select";
+    flavorSelect.addEventListener("change", () => updateDietaryOptions(index));
+    for (const flavor of item.flavors) {
+      const opt = document.createElement("option");
+      opt.value = flavor;
+      opt.textContent = flavor;
+      flavorSelect.appendChild(opt);
+    }
+    flavorGroup.appendChild(flavorLabel);
+    flavorGroup.appendChild(flavorSelect);
+    form.appendChild(flavorGroup);
+  }
+
+  // Flavor notes (optional)
+  if (item.flavorNotes) {
+    const notesGroup = document.createElement("div");
+    notesGroup.className = "form-group";
+    const notesLabel = document.createElement("label");
+    notesLabel.textContent = "Flavor Notes:";
+    const notesInput = document.createElement("input");
+    notesInput.type = "text";
+    notesInput.id = `notes-${index}`;
+    notesInput.className = "flavor-notes";
+    notesInput.placeholder = "Optional flavor preferences";
+    notesGroup.appendChild(notesLabel);
+    notesGroup.appendChild(notesInput);
+    form.appendChild(notesGroup);
+  }
+
+  // Quantity
+  const qtyGroup = document.createElement("div");
+  qtyGroup.className = "form-group";
+  const qtyLabel = document.createElement("label");
+  qtyLabel.textContent = "Quantity:";
+  const qtyInput = document.createElement("input");
+  qtyInput.type = "number";
+  qtyInput.id = `qty-${index}`;
+  qtyInput.className = "quantity-input";
+  qtyInput.min = "1";
+  qtyInput.value = "1";
+  qtyGroup.appendChild(qtyLabel);
+  qtyGroup.appendChild(qtyInput);
+  form.appendChild(qtyGroup);
+
+  // Dietary section
+  const dietarySection = document.createElement("div");
+  dietarySection.className = "dietary-section";
+  dietarySection.id = `dietary-${index}`;
+
+  const dietaryCheckboxes = document.createElement("div");
+  dietaryCheckboxes.className = "dietary-checkboxes";
+
+  const glutenOption = document.createElement("div");
+  glutenOption.className = "dietary-option";
+  glutenOption.id = `gluten-option-${index}`;
+  const glutenInput = document.createElement("input");
+  glutenInput.type = "checkbox";
+  glutenInput.id = `gluten-${index}`;
+  glutenInput.className = "gluten-checkbox";
+  const glutenLabel = document.createElement("label");
+  glutenLabel.htmlFor = `gluten-${index}`;
+  glutenLabel.textContent = "Gluten Free";
+  glutenOption.appendChild(glutenInput);
+  glutenOption.appendChild(glutenLabel);
+
+  const sugarOption = document.createElement("div");
+  sugarOption.className = "dietary-option";
+  sugarOption.id = `sugar-option-${index}`;
+  const sugarInput = document.createElement("input");
+  sugarInput.type = "checkbox";
+  sugarInput.id = `sugar-${index}`;
+  sugarInput.className = "sugar-checkbox";
+  const sugarLabel = document.createElement("label");
+  sugarLabel.htmlFor = `sugar-${index}`;
+  sugarLabel.textContent = "Sugar Free";
+  sugarOption.appendChild(sugarInput);
+  sugarOption.appendChild(sugarLabel);
+
+  dietaryCheckboxes.appendChild(glutenOption);
+  dietaryCheckboxes.appendChild(sugarOption);
+  dietarySection.appendChild(dietaryCheckboxes);
+  form.appendChild(dietarySection);
+
+  const addBtn = document.createElement("button");
+  addBtn.className = "add-to-cart-btn";
+  addBtn.textContent = "Add to Cart";
+  addBtn.addEventListener("click", () => addToCart(index));
+  form.appendChild(addBtn);
+
+  card.appendChild(form);
+  return card;
+}
+
+function getDefaultPrice(item) {
+  if (typeof item.basePrice === "number") return item.basePrice;
+  if (item.sizes && item.sizes.length > 0 && item.sizePrice) {
+    const firstSize = item.sizes[0];
+    return item.sizePrice[firstSize] || 0;
+  }
+  return 0;
 }
 
 function updatePrice(index) {
