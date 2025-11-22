@@ -1,0 +1,8 @@
+# www.yellowfarmhousetreats.com robots.txt
+
+User-agent: *
+Allow: /
+Disallow: /cart.html
+
+# Sitemap
+Sitemap: https://www.yellowfarmhousetreats.com/sitemap.xml
