@@ -186,7 +186,6 @@
           <dialog
             id="productModal"
             aria-modal="true"
-            role="dialog"
             aria-labelledby="modalTitle"
             aria-describedby="modalContent"
           >
@@ -247,7 +246,6 @@
       // Update cart badge count (call this from cart.js)
       function updateCartBadge() {
         const badge = document.getElementById("cartBadge");
-        const cartIcon = document.querySelector(".cart-icon");
         const cart = globalThis.cart || [];
         if (badge) {
           const itemCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
@@ -293,20 +291,20 @@
       // Select category from header filters
       function selectHeaderCategory(category) {
         // Update header button states
-        document.querySelectorAll(".filter-cat-btn").forEach((btn) => {
+        for (const btn of document.querySelectorAll(".filter-cat-btn")) {
           btn.classList.toggle("active", btn.dataset.filterCategory === category);
-        });
+        }
 
         // Sync with main category tabs
         const mainTabs = document.querySelectorAll(".tab-button");
-        mainTabs.forEach((tab) => {
+        for (const tab of mainTabs) {
           if (tab.dataset.category === category) {
             tab.classList.add("active");
             tab.click();
           } else {
             tab.classList.remove("active");
           }
-        });
+        }
 
         // Sync select dropdown
         const select = document.getElementById("categorySelect");

@@ -2,13 +2,13 @@
 let cart = [];
 
 // Expose cart array to global scope
-if (typeof window !== "undefined") {
-  window.cart = cart;
+if (globalThis.window !== undefined) {
+  globalThis.cart = cart;
 }
 
 function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
-  window.cart = cart;
+  globalThis.cart = cart;
 }
 
 function loadCart() {
@@ -16,11 +16,11 @@ function loadCart() {
   if (saved) {
     try {
       cart = JSON.parse(saved);
-      window.cart = cart;
+      globalThis.cart = cart;
     } catch (e) {
       console.error("Failed to load cart from localStorage:", e);
       cart = [];
-      window.cart = cart;
+      globalThis.cart = cart;
     }
   }
   return cart;
@@ -28,7 +28,7 @@ function loadCart() {
 
 function addToCart(index) {
   // Ensure menuItems exists (loaded from product_loader.js)
-  if (typeof menuItems === "undefined" || !menuItems || !menuItems[index]) {
+  if (typeof menuItems === "undefined" || !menuItems?.[index]) {
     showError("Product information not available. Please refresh the page.");
     return;
   }
@@ -37,7 +37,7 @@ function addToCart(index) {
   let size, flavor, qty, glutenFree, sugarFree;
 
   const modal = document.getElementById("productModal");
-  const modalOpen = modal && modal.open;
+  const modalOpen = modal?.open;
 
   if (modalOpen) {
     size = document.getElementById("modal-size").value;
@@ -474,17 +474,17 @@ function proceedToCart() {
 
 // ========== INITIALIZE ==========
 // Expose cart functions to global scope for inline event handlers
-window.addToCart = addToCart;
-window.removeFromCart = removeFromCart;
-window.clearCart = clearCart;
-window.proceedToCart = proceedToCart;
-window.showSuccess = showSuccess;
-window.showError = showError;
-window.updatePaymentDetails = updatePaymentDetails;
-window.handleFulfillmentChange = handleFulfillmentChange;
-window.calculateShipping = calculateShipping;
-window.loadCart = loadCart;
-window.updateCart = updateCart;
+globalThis.addToCart = addToCart;
+globalThis.removeFromCart = removeFromCart;
+globalThis.clearCart = clearCart;
+globalThis.proceedToCart = proceedToCart;
+globalThis.showSuccess = showSuccess;
+globalThis.showError = showError;
+globalThis.updatePaymentDetails = updatePaymentDetails;
+globalThis.handleFulfillmentChange = handleFulfillmentChange;
+globalThis.calculateShipping = calculateShipping;
+globalThis.loadCart = loadCart;
+globalThis.updateCart = updateCart;
 
 // Load cart immediately when script loads
 loadCart();

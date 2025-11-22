@@ -370,7 +370,7 @@ function openProductModal(index) {
       const idx = focusable.indexOf(document.activeElement);
       if (e.shiftKey && idx === 0) {
         e.preventDefault();
-        focusable[focusable.length - 1].focus();
+        focusable.at(-1).focus();
       } else if (!e.shiftKey && idx === focusable.length - 1) {
         e.preventDefault();
         focusable[0].focus();
@@ -512,10 +512,10 @@ function updateDietaryOptionsInModal() {
 }
 
 // Expose functions to global scope
-window.openProductModal = openProductModal;
-window.closeProductModal = closeProductModal;
-window.updatePriceInModal = updatePriceInModal;
-window.updateDietaryOptionsInModal = updateDietaryOptionsInModal;
+globalThis.openProductModal = openProductModal;
+globalThis.closeProductModal = closeProductModal;
+globalThis.updatePriceInModal = updatePriceInModal;
+globalThis.updateDietaryOptionsInModal = updateDietaryOptionsInModal;
 
 // ========== INITIALIZE ON PAGE LOAD ==========
 document.addEventListener("DOMContentLoaded", initializeProducts);
