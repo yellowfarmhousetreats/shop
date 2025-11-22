@@ -238,12 +238,32 @@ function calculateShipping() {
 
 // ========== CALCULATE TOTALS ==========
 function calculateTotals() {
+  const subtotalEl = document.getElementById("summarySubtotal");
+  const shippingEl = document.getElementById("summaryShipping");
+  const totalEl = document.getElementById("summaryTotal");
+  const depositEl = document.getElementById("summaryDeposit");
+  const balanceEl = document.getElementById("summaryBalance");
+  const fulfillmentInput = document.querySelector('input[name="fulfillment_method"]:checked');
+  const shippingCostEl = document.getElementById("shippingCost");
+
+  // If we're not on the checkout page, silently exit
+  if (
+    !subtotalEl ||
+    !shippingEl ||
+    !totalEl ||
+    !depositEl ||
+    !balanceEl ||
+    !fulfillmentInput ||
+    !shippingCostEl
+  ) {
+    return;
+  }
+
   let subtotal = cart.reduce((sum, item) => sum + item.price, 0);
 
   let shippingCost = 0;
-  const fulfillment = document.querySelector('input[name="fulfillment_method"]:checked').value;
-  if (fulfillment === "Shipping") {
-    const shippingCostText = document.getElementById("shippingCost").textContent;
+  if (fulfillmentInput.value === "Shipping") {
+    const shippingCostText = shippingCostEl.textContent;
     shippingCost = Number.parseFloat(shippingCostText.replace("$", "")) || 0;
   }
 
@@ -256,25 +276,34 @@ function calculateTotals() {
   const deposit = baseDeposit + additionalDeposit;
   const balance = total - deposit;
 
-  document.getElementById("summarySubtotal").textContent = `$${subtotal.toFixed(2)}`;
-  document.getElementById("summaryShipping").textContent = `$${shippingCost.toFixed(2)}`;
-  document.getElementById("summaryTotal").textContent = `$${total.toFixed(2)}`;
-  document.getElementById("summaryDeposit").textContent = `$${deposit.toFixed(2)}`;
-  document.getElementById("summaryBalance").textContent = `$${balance.toFixed(2)}`;
+  subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+  shippingEl.textContent = `$${shippingCost.toFixed(2)}`;
+  totalEl.textContent = `$${total.toFixed(2)}`;
+  depositEl.textContent = `$${deposit.toFixed(2)}`;
+  balanceEl.textContent = `$${balance.toFixed(2)}`;
 
-  // Update deposit display
-  document.getElementById("depositDisplayAmount").textContent = `$${deposit.toFixed(2)}`;
-  document.getElementById("balanceDisplayAmount").textContent = `$${balance.toFixed(2)}`;
+  // Update deposit display if present
+  const depositDisplay = document.getElementById("depositDisplayAmount");
+  if (depositDisplay) {
+    depositDisplay.textContent = `$${deposit.toFixed(2)}`;
+  }
+  const balanceDisplay = document.getElementById("balanceDisplayAmount");
+  if (balanceDisplay) {
+    balanceDisplay.textContent = `$${balance.toFixed(2)}`;
+  }
 
-  const orderDetails = cart
-    .map(
-      (item) =>
-        `${item.quantity}x ${item.name} - ${item.size}${item.flavor === "Standard" ? "" : " - " + item.flavor}${item.glutenFree ? " [GF]" : ""}${item.sugarFree ? " [SF]" : ""}: $${item.price.toFixed(2)}`
-    )
-    .join("\n");
-  document.getElementById("orderSummary").value =
-    orderDetails +
-    `\n\nTotal: $${total.toFixed(2)}\nDeposit Due: $${deposit.toFixed(2)}\nBalance Due at Pickup: $${balance.toFixed(2)}`;
+  const orderSummaryInput = document.getElementById("orderSummary");
+  if (orderSummaryInput) {
+    const orderDetails = cart
+      .map(
+        (item) =>
+          `${item.quantity}x ${item.name} - ${item.size}${item.flavor === "Standard" ? "" : " - " + item.flavor}${item.glutenFree ? " [GF]" : ""}${item.sugarFree ? " [SF]" : ""}: $${item.price.toFixed(2)}`
+      )
+      .join("\n");
+    orderSummaryInput.value =
+      orderDetails +
+      `\n\nTotal: $${total.toFixed(2)}\nDeposit Due: $${deposit.toFixed(2)}\nBalance Due at Pickup: $${balance.toFixed(2)}`;
+  }
 }
 
 // ========== FORM SUBMISSION ==========

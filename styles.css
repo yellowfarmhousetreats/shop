@@ -60,7 +60,7 @@ body {
   background: white;
   border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .header {
@@ -90,10 +90,10 @@ body {
 
 /* ==================== STICKY NAVIGATION HEADER ==================== */
 .sticky-header {
-  position: relative;
+  position: sticky;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(135deg, ▓#8B7355 0%, ▓#b8722 100%);
+  background: linear-gradient(135deg, #8b7355 0%, #b87220 100%);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -111,7 +111,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: ▓#fff;
+  background: #fff;
   color: var(--color-primary);
   text-decoration: none;
   border-radius: 20px;
@@ -127,7 +127,7 @@ body {
 .phone-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  background: ▓#f0f0f0;
+  background: #f0f0f0;
 }
 
 .phone-text {
@@ -143,7 +143,7 @@ body {
 .brand-name {
   font-size: 1.3em;
   font-weight: 700;
-  color: ▓#2c3e50;
+  color: #2c3e50;
   text-decoration: none;
   text-align: center;
   flex: 1;
@@ -175,8 +175,8 @@ body {
   position: absolute;
   top: 4px;
   right: 4px;
-  background: ▓#e74c3c;
-  color: ▓#fff;
+  background: #e74c3c;
+  color: #fff;
   border-radius: 50%;
   min-width: 20px;
   height: 20px;
@@ -192,7 +192,7 @@ body {
   text-align: center;
   padding: 8px 20px;
   background: rgba(255, 255, 255, 0.9);
-  color: ▓#2c3e50;
+  color: #2c3e50;
   font-size: 0.95em;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
@@ -536,6 +536,26 @@ input[type="number"] {
   background: #faf8f3;
   max-height: 400px;
   overflow-y: auto;
+}
+
+.cart-back-row {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #8b7220;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
 }
 
 .order-item {
