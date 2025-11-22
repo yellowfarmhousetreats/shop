@@ -40,6 +40,28 @@ function generateCategoryTabs() {
   const tabContainer = document.getElementById("categoryTabs");
   tabContainer.innerHTML = "";
 
+  // Create select for mobile
+  const select = document.createElement("select");
+  select.id = "categorySelect";
+  select.className = "category-select";
+
+  // All option
+  const allOption = document.createElement("option");
+  allOption.value = "all";
+  allOption.textContent = "All";
+  select.appendChild(allOption);
+
+  // Get unique categories
+  const categories = [...new Set(menuItems.map(item => item.category))];
+  for (const cat of categories) {
+    const option = document.createElement("option");
+    option.value = cat;
+    option.textContent = cat;
+    select.appendChild(option);
+  }
+
+  tabContainer.appendChild(select);
+
   // All tab
   const allTab = document.createElement("button");
   allTab.className = "tab-button active";
@@ -48,8 +70,7 @@ function generateCategoryTabs() {
   allTab.addEventListener("click", setActiveTab);
   tabContainer.appendChild(allTab);
 
-  // Get unique categories
-  const categories = [...new Set(menuItems.map(item => item.category))];
+  // Tabs for categories
   for (const cat of categories) {
     const tab = document.createElement("button");
     tab.className = "tab-button";
@@ -58,6 +79,20 @@ function generateCategoryTabs() {
     tab.addEventListener("click", setActiveTab);
     tabContainer.appendChild(tab);
   }
+
+  // Add event listener to select
+  select.addEventListener("change", () => {
+    // Set active tab to match select
+    const selectedCategory = select.value;
+    for (const btn of document.querySelectorAll(".tab-button")) {
+      if (btn.dataset.category === selectedCategory) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    }
+    filterAndDisplay();
+  });
 }
 
 function setActiveTab(event) {
@@ -65,7 +100,16 @@ function setActiveTab(event) {
     btn.classList.remove("active");
   }
   event.target.classList.add("active");
+  // Sync select
+  const category = event.target.dataset.category;
+  const select = document.getElementById("categorySelect");
+  if (select) select.value = category;
   filterAndDisplay();
+}
+
+function getCurrentCategory() {
+  const activeTab = document.querySelector(".tab-button.active");
+  return activeTab ? activeTab.dataset.category : "all";
 }
 
 function displayProducts(products) {
@@ -343,8 +387,7 @@ function filterAndDisplay() {
   let filtered = menuItems.slice(); // copy
 
   // Category filter
-  const activeTab = document.querySelector(".tab-button.active");
-  const category = activeTab ? activeTab.dataset.category : "all";
+  const category = getCurrentCategory();
   if (category !== "all") {
     filtered = filtered.filter(item => item.category === category);
   }

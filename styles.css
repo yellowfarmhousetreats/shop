@@ -951,6 +951,10 @@
                 justify-content: center;
             }
 
+            .tab-button {
+                display: none;
+            }
+
             .dietary-filters {
                 justify-content: center;
             }
@@ -1043,6 +1047,24 @@
     background: #d4af37;
     color: #000;
     border-color: #d4af37;
+}
+
+.category-select {
+    padding: 10px 15px;
+    border: 2px solid #d4c5b9;
+    background: #faf8f3;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95em;
+}
+
+.category-select:hover, .category-select:focus {
+    border-color: #d4af37;
+    outline: none;
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
 }
 
 .dietary-filters {
