@@ -217,11 +217,20 @@ function createProductCard(item, index) {
   const imgWrap = document.createElement("div");
   imgWrap.className = "product-image";
   if (item.image) {
+    // Use <picture> for WebP support with JPG fallback
+    const picture = document.createElement("picture");
+    const webpSrc = item.image.replace('.jpg', '.webp').replace('.png', '.webp');
+    const source = document.createElement("source");
+    source.srcset = webpSrc;
+    source.type = "image/webp";
+    picture.appendChild(source);
+    
     const img = document.createElement("img");
     img.src = item.image;
     img.alt = item.name || "Product Image";
-    img.loading = 'lazy';  // Add lazy loading
-    imgWrap.appendChild(img);
+    img.loading = 'lazy';
+    picture.appendChild(img);
+    imgWrap.appendChild(picture);
   } else {
     imgWrap.innerHTML = '<div class="image-placeholder">Image Coming Soon</div>';
   }
@@ -365,7 +374,8 @@ function createModalContent(item, index) {
   // Image
   html += '<div class="product-image">';
   if (item.image) {
-    html += `<img alt="${item.name || 'Product Image'}" data-src="${item.image}">`;  // Use data-src for lazy loading
+    const webpSrc = item.image.replace('.jpg', '.webp').replace('.png', '.webp');
+    html += `<picture><source srcset="${webpSrc}" type="image/webp"><img alt="${item.name || 'Product Image'}" data-src="${item.image}"></picture>`;
   } else {
     html += '<div class="image-placeholder">Image Coming Soon</div>';
   }
