@@ -1,6 +1,7 @@
 # Yellow Farmhouse Treats – Dev Onboarding
 
 ## 1. Project Inventory
+
 - **HTML entry points**
   - `index.html` – main storefront (catalog, filters, modal, cart badge, alerts).
   - `cart.html` – checkout form showing persisted cart contents.
@@ -19,12 +20,14 @@
   - `npm run build:js`, `npm run build:css`, `npm run build` – generate `.min.js/.min.css` plus cache-busting query strings in HTML.
 
 ## 2. Link & Dependency Notes
+
 - `index.html` loads the minified JS/CSS; whenever source files change, rerun `npm run build` so production assets stay in sync.
 - Inline handlers (`onclick="addToCart(...)"`, modal controls) depend on functions attached to `window` from `cart.js`/`product_loader.js`. Renaming/removing them breaks UI instantly.
 - Cart badge (`#cartBadge`), success/error alerts (`#successAlert`, `#errorAlert`), modal container IDs, and filter inputs must remain stable; JS queries by ID/class.
 - Cart persistence relies on `localStorage["yft_cart"]` with the current schema. Any schema change requires migration logic in both JS files.
 
 ## 3. Critical Areas & “Do Not Touch” Without Coordination
+
 1. **Cart storage & badge logic**
    - Keep storage key `yft_cart`.
    - Maintain DOM IDs for badge and alerts.
@@ -39,6 +42,7 @@
    - Only modify source files (`product_loader.js`, `cart.js`, `styles.css`). Run build scripts to regenerate `.min.*`. Editing minified output is forbidden.
 
 ## 4. Workflow for New Developers
+
 1. Clone repo, run `npm install`.
 2. Use `python3 -m http.server 8000` (or `npx serve . -l 8000`) for local testing against unminified assets.
 3. Make changes in source files only.
@@ -52,6 +56,7 @@
    - GF/SF filters, search, sort, and modal option changes behave as expected.
 
 ## 5. Quick Testing Checklist
+
 - Desktop & mobile viewports (sticky header + badge alignment).
 - Add/Remove cart items; refresh page to confirm persistence.
 - Proceed to checkout page; verify same cart contents.
@@ -60,9 +65,11 @@
 - DevTools console shows no errors after interactions.
 
 Keep this doc up to date whenever the architecture or workflow changes.```// filepath: .github/workflows/copilot_instructions.md
+
 # Yellow Farmhouse Treats – Dev Onboarding
 
 ## 1. Project Inventory
+
 - **HTML entry points**
   - `index.html` – main storefront (catalog, filters, modal, cart badge, alerts).
   - `cart.html` – checkout form showing persisted cart contents.
@@ -81,12 +88,14 @@ Keep this doc up to date whenever the architecture or workflow changes.```// fil
   - `npm run build:js`, `npm run build:css`, `npm run build` – generate `.min.js/.min.css` plus cache-busting query strings in HTML.
 
 ## 2. Link & Dependency Notes
+
 - `index.html` loads the minified JS/CSS; whenever source files change, rerun `npm run build` so production assets stay in sync.
 - Inline handlers (`onclick="addToCart(...)"`, modal controls) depend on functions attached to `window` from `cart.js`/`product_loader.js`. Renaming/removing them breaks UI instantly.
 - Cart badge (`#cartBadge`), success/error alerts (`#successAlert`, `#errorAlert`), modal container IDs, and filter inputs must remain stable; JS queries by ID/class.
 - Cart persistence relies on `localStorage["yft_cart"]` with the current schema. Any schema change requires migration logic in both JS files.
 
 ## 3. Critical Areas & “Do Not Touch” Without Coordination
+
 1. **Cart storage & badge logic**
    - Keep storage key `yft_cart`.
    - Maintain DOM IDs for badge and alerts.
@@ -101,6 +110,7 @@ Keep this doc up to date whenever the architecture or workflow changes.```// fil
    - Only modify source files (`product_loader.js`, `cart.js`, `styles.css`). Run build scripts to regenerate `.min.*`. Editing minified output is forbidden.
 
 ## 4. Workflow for New Developers
+
 1. Clone repo, run `npm install`.
 2. Use `python3 -m http.server 8000` (or `npx serve . -l 8000`) for local testing against unminified assets.
 3. Make changes in source files only.
@@ -114,6 +124,7 @@ Keep this doc up to date whenever the architecture or workflow changes.```// fil
    - GF/SF filters, search, sort, and modal option changes behave as expected.
 
 ## 5. Quick Testing Checklist
+
 - Desktop & mobile viewports (sticky header + badge alignment).
 - Add/Remove cart items; refresh page to confirm persistence.
 - Proceed to checkout page; verify same cart contents.
