@@ -19,8 +19,12 @@
 
         body {
             font-family: 'Open Sans', sans-serif;
-            background: linear-gradient(135deg, var(--color-bg) 0%, #fff9e6 100%);
-            padding: 20px;
+    background-color: #f5f1e8;
+    background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 115, 85, 0.03) 2px, rgba(139, 115, 85, 0.03) 4px),
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(139, 115, 85, 0.03) 2px, rgba(139, 115, 85, 0.03) 4px),
+        repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(139, 115, 85, 0.02) 5px, rgba(139, 115, 85, 0.02) 10px),
+        repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(139, 115, 85, 0.02) 5px, rgba(139, 115, 85, 0.02) 10px);            padding: 20px;
             min-height: 100vh;
             color: var(--color-text);
         }
