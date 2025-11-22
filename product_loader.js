@@ -24,73 +24,103 @@ async function initializeProducts() {
 
   grid.innerHTML = "";
 
-  menuItems.forEach((item, index) => {
-    const defaultPrice = item.basePrice || item.sizePrice[item.sizes[0]];
+  // Group products by category
+  const productsByCategory = {};
+  menuItems.forEach(item => {
+    if (!productsByCategory[item.category]) {
+      productsByCategory[item.category] = [];
+    }
+    productsByCategory[item.category].push(item);
+  });
 
-    const card = document.createElement("div");
-    card.className = "product-card";
-    card.innerHTML = `
-      <div class="product-header">
-        <div class="product-name">${item.emoji} ${item.name}</div>
-        <div class="product-price">from $${defaultPrice.toFixed(2)}</div>
-      </div>
-      <div class="product-form">
-        <div class="form-group">
-          <label>Size:</label>
-          <select id="size-${index}" class="size-select" onchange="updatePrice(${index})">
-            ${item.sizes
-              .map((size) => `<option value="${size}">${size}</option>`)
-              .join("")}
-          </select>
+  let globalIndex = 0;
+
+  Object.keys(productsByCategory).forEach(category => {
+    // Create category section
+    const section = document.createElement("div");
+    section.className = "category-section";
+
+    const title = document.createElement("h2");
+    title.className = "category-title";
+    title.textContent = category;
+    section.appendChild(title);
+
+    const categoryGrid = document.createElement("div");
+    categoryGrid.className = "products-grid";
+
+    productsByCategory[category].forEach(item => {
+      const defaultPrice = item.basePrice || item.sizePrice[item.sizes[0]];
+
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.innerHTML = `
+        ${item.image ? `<div class="product-image"><img src="${item.image}" alt="${item.name}"></div>` : ''}
+        <div class="product-header">
+          <div class="product-name">${item.name}</div>
+          <div class="product-price">from $${defaultPrice.toFixed(2)}</div>
         </div>
-        ${
-          item.flavors && item.flavors.length > 0
-            ? `
+        <div class="product-form">
           <div class="form-group">
-            <label>Flavor:</label>
-            <select id="flavor-${index}" class="flavor-select" onchange="updateDietaryOptions(${index})">
-              ${item.flavors
-                .map((flavor) => `<option value="${flavor}">${flavor}</option>`)
+            <label>Size:</label>
+            <select id="size-${globalIndex}" class="size-select" onchange="updatePrice(${globalIndex})">
+              ${item.sizes
+                .map((size) => `<option value="${size}">${size}</option>`)
                 .join("")}
             </select>
           </div>
-        `
-            : ""
-        }
-        ${
-          item.flavorNotes
-            ? `
+          ${
+            item.flavors && item.flavors.length > 0
+              ? `
+            <div class="form-group">
+              <label>Flavor:</label>
+              <select id="flavor-${globalIndex}" class="flavor-select" onchange="updateDietaryOptions(${globalIndex})">
+                ${item.flavors
+                  .map((flavor) => `<option value="${flavor}">${flavor}</option>`)
+                  .join("")}
+              </select>
+            </div>
+          `
+              : ""
+          }
+          ${
+            item.flavorNotes
+              ? `
+            <div class="form-group">
+              <label>Flavor Notes:</label>
+                <input type="text" id="notes-${globalIndex}" class="flavor-notes" placeholder="Optional flavor preferences">
+              </div>
+          `
+              : ""
+          }
           <div class="form-group">
-            <label>Flavor Notes:</label>
-            <input type="text" id="notes-${index}" class="flavor-notes" placeholder="Optional flavor preferences">
+            <label>Quantity:</label>
+            <input type="number" id="qty-${globalIndex}" class="quantity-input" min="1" value="1">
           </div>
-        `
-            : ""
-        }
-        <div class="form-group">
-          <label>Quantity:</label>
-          <input type="number" id="qty-${index}" class="quantity-input" min="1" value="1">
-        </div>
-        <div class="dietary-section" id="dietary-${index}">
-          <div class="dietary-checkboxes">
-            <div class="dietary-option" id="gluten-option-${index}">
-              <input type="checkbox" id="gluten-${index}" class="gluten-checkbox">
-              <label for="gluten-${index}">Gluten Free</label>
-            </div>
-            <div class="dietary-option" id="sugar-option-${index}">
-              <input type="checkbox" id="sugar-${index}" class="sugar-checkbox">
-              <label for="sugar-${index}">Sugar Free</label>
+          <div class="dietary-section" id="dietary-${globalIndex}">
+            <div class="dietary-checkboxes">
+              <div class="dietary-option" id="gluten-option-${globalIndex}">
+                <input type="checkbox" id="gluten-${globalIndex}" class="gluten-checkbox">
+                <label for="gluten-${globalIndex}">Gluten Free</label>
+              </div>
+              <div class="dietary-option" id="sugar-option-${globalIndex}">
+                <input type="checkbox" id="sugar-${globalIndex}" class="sugar-checkbox">
+                <label for="sugar-${globalIndex}">Sugar Free</label>
+              </div>
             </div>
           </div>
+          <button class="add-to-cart-btn" onclick="addToCart(${globalIndex})">Add to Cart</button>
         </div>
-        <button class="add-to-cart-btn" onclick="addToCart(${index})">Add to Cart</button>
-      </div>
-    `;
-    grid.appendChild(card);
-    updateDietaryOptions(index);
+      `;
+      categoryGrid.appendChild(card);
+      updateDietaryOptions(globalIndex);
+      globalIndex++;
+    });
+
+    section.appendChild(categoryGrid);
+    grid.appendChild(section);
   });
 
-  updateDietaryFilters();
+  // Removed dietary filtering as dietary tags are no longer in JSON
 }
 
 function updatePrice(index) {
@@ -107,30 +137,23 @@ function updatePrice(index) {
 
 function updateDietaryOptions(index) {
   const item = menuItems[index];
-  const flavorSelect = document.getElementById(`flavor-${index}`);
-  const selectedFlavor = flavorSelect.value;
   const dietarySection = document.getElementById(`dietary-${index}`);
   const glutenOption = document.getElementById(`gluten-option-${index}`);
   const sugarOption = document.getElementById(`sugar-option-${index}`);
   
-  const flavorNotes = item.flavorNotes[selectedFlavor] || {};
-  
-  document.getElementById(`gluten-${index}`).checked = false;
-  document.getElementById(`sugar-${index}`).checked = false;
-  
-  if (flavorNotes.glutenFree) {
+  if (item.canGlutenfree) {
     glutenOption.classList.remove('hidden');
   } else {
     glutenOption.classList.add('hidden');
   }
   
-  if (flavorNotes.sugarFree) {
+  if (item.canSugarfree) {
     sugarOption.classList.remove('hidden');
   } else {
     sugarOption.classList.add('hidden');
   }
   
-  if (flavorNotes.glutenFree || flavorNotes.sugarFree) {
+  if (item.canGlutenfree || item.canSugarfree) {
     dietarySection.classList.remove('hidden');
   } else {
     dietarySection.classList.add('hidden');
@@ -139,47 +162,11 @@ function updateDietaryOptions(index) {
 
 // ========== DIETARY FILTERING ==========
 function updateDietaryFilters() {
-  const dietaryContainer = document.getElementById("dietaryFilters");
-  if (!dietaryContainer) return;
-
-  const allDietaryTags = new Set();
-  menuItems.forEach((item) => {
-    if (item.dietary) {
-      item.dietary.forEach((tag) => allDietaryTags.add(tag));
-    }
-  });
-
-  dietaryContainer.innerHTML = Array.from(allDietaryTags)
-    .map(
-      (tag) => `
-      <label>
-        <input type="checkbox" value="${tag}" onchange="filterProducts()">
-        ${tag}
-      </label>
-    `
-    )
-    .join("");
+  // Removed as dietary tags are no longer in JSON
 }
 
 function filterProducts() {
-  const checkedFilters = Array.from(
-    document.querySelectorAll("#dietaryFilters input:checked")
-  ).map((cb) => cb.value);
-
-  const cards = document.querySelectorAll(".product-card");
-
-  cards.forEach((card, index) => {
-    const item = menuItems[index];
-
-    if (checkedFilters.length === 0) {
-      card.style.display = "block";
-    } else {
-      const matches = checkedFilters.every(
-        (filter) => item.dietary && item.dietary.includes(filter)
-      );
-      card.style.display = matches ? "block" : "none";
-    }
-  });
+  // Removed as dietary tags are no longer in JSON
 }
 
 // ========== INITIALIZE ON PAGE LOAD ==========
