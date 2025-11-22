@@ -37,7 +37,7 @@ async function initializeProducts() {
       <div class="product-form">
         <div class="form-group">
           <label>Size:</label>
-          <select class="size-select" onchange="updatePrice(${index})">
+          <select id="size-${index}" class="size-select" onchange="updatePrice(${index})">
             ${item.sizes
               .map((size) => `<option value="${size}">${size}</option>`)
               .join("")}
@@ -48,7 +48,7 @@ async function initializeProducts() {
             ? `
           <div class="form-group">
             <label>Flavor:</label>
-            <select class="flavor-select">
+            <select id="flavor-${index}" class="flavor-select" onchange="updateDietaryOptions(${index})">
               ${item.flavors
                 .map((flavor) => `<option value="${flavor}">${flavor}</option>`)
                 .join("")}
@@ -62,22 +62,35 @@ async function initializeProducts() {
             ? `
           <div class="form-group">
             <label>Flavor Notes:</label>
-            <input type="text" class="flavor-notes" placeholder="Optional flavor preferences">
+            <input type="text" id="notes-${index}" class="flavor-notes" placeholder="Optional flavor preferences">
           </div>
         `
             : ""
         }
         <div class="form-group">
           <label>Quantity:</label>
-          <input type="number" class="quantity-input" min="1" value="1">
+          <input type="number" id="qty-${index}" class="quantity-input" min="1" value="1">
+        </div>
+        <div class="dietary-section" id="dietary-${index}">
+          <div class="dietary-checkboxes">
+            <div class="dietary-option" id="gluten-option-${index}">
+              <input type="checkbox" id="gluten-${index}" class="gluten-checkbox">
+              <label for="gluten-${index}">Gluten Free</label>
+            </div>
+            <div class="dietary-option" id="sugar-option-${index}">
+              <input type="checkbox" id="sugar-${index}" class="sugar-checkbox">
+              <label for="sugar-${index}">Sugar Free</label>
+            </div>
+          </div>
         </div>
         <button class="add-to-cart-btn" onclick="addToCart(${index})">Add to Cart</button>
       </div>
     `;
     grid.appendChild(card);
+    updateDietaryOptions(index);
   });
 
-  updateDietaryOptions();
+  updateDietaryFilters();
 }
 
 function updatePrice(index) {
@@ -92,8 +105,40 @@ function updatePrice(index) {
   priceDisplay.textContent = `from $${price.toFixed(2)}`;
 }
 
+function updateDietaryOptions(index) {
+  const item = menuItems[index];
+  const flavorSelect = document.getElementById(`flavor-${index}`);
+  const selectedFlavor = flavorSelect.value;
+  const dietarySection = document.getElementById(`dietary-${index}`);
+  const glutenOption = document.getElementById(`gluten-option-${index}`);
+  const sugarOption = document.getElementById(`sugar-option-${index}`);
+  
+  const flavorNotes = item.flavorNotes[selectedFlavor] || {};
+  
+  document.getElementById(`gluten-${index}`).checked = false;
+  document.getElementById(`sugar-${index}`).checked = false;
+  
+  if (flavorNotes.glutenFree) {
+    glutenOption.classList.remove('hidden');
+  } else {
+    glutenOption.classList.add('hidden');
+  }
+  
+  if (flavorNotes.sugarFree) {
+    sugarOption.classList.remove('hidden');
+  } else {
+    sugarOption.classList.add('hidden');
+  }
+  
+  if (flavorNotes.glutenFree || flavorNotes.sugarFree) {
+    dietarySection.classList.remove('hidden');
+  } else {
+    dietarySection.classList.add('hidden');
+  }
+}
+
 // ========== DIETARY FILTERING ==========
-function updateDietaryOptions() {
+function updateDietaryFilters() {
   const dietaryContainer = document.getElementById("dietaryFilters");
   if (!dietaryContainer) return;
 
@@ -135,141 +180,6 @@ function filterProducts() {
       card.style.display = matches ? "block" : "none";
     }
   });
-}
-
-// ========== CART MANAGEMENT ==========
-let cart = [];
-
-function addToCart(index) {
-  const item = menuItems[index];
-  const cards = document.querySelectorAll(".product-card");
-  const card = cards[index];
-
-  const sizeSelect = card.querySelector(".size-select");
-  const flavorSelect = card.querySelector(".flavor-select");
-  const flavorNotes = card.querySelector(".flavor-notes");
-  const quantityInput = card.querySelector(".quantity-input");
-
-  const selectedSize = sizeSelect ? sizeSelect.value : item.sizes[0];
-  const selectedFlavor = flavorSelect ? flavorSelect.value : null;
-  const notes = flavorNotes ? flavorNotes.value : "";
-  const quantity = parseInt(quantityInput.value) || 1;
-
-  const price = item.sizePrice ? item.sizePrice[selectedSize] : item.basePrice;
-
-  const cartItem = {
-    name: item.name,
-    emoji: item.emoji,
-    size: selectedSize,
-    flavor: selectedFlavor,
-    notes: notes,
-    quantity: quantity,
-    price: price,
-    canShip: item.canShip,
-  };
-
-  cart.push(cartItem);
-  updateCart();
-
-  // Reset form
-  if (quantityInput) quantityInput.value = 1;
-  if (flavorNotes) flavorNotes.value = "";
-}
-
-function updateCart() {
-  const cartItems = document.getElementById("cartItems");
-  const cartCount = document.getElementById("cartCount");
-  const cartTotal = document.getElementById("cartTotal");
-
-  if (!cartItems) return;
-
-  if (cart.length === 0) {
-    cartItems.innerHTML = "<p>Your cart is empty</p>";
-    if (cartCount) cartCount.textContent = "0";
-    if (cartTotal) cartTotal.textContent = "$0.00";
-    return;
-  }
-
-  let total = 0;
-  cartItems.innerHTML = cart
-    .map((item, i) => {
-      const itemTotal = item.price * item.quantity;
-      total += itemTotal;
-
-      return `
-      <div class="cart-item">
-        <div class="cart-item-details">
-          <strong>${item.emoji} ${item.name}</strong>
-          <div>Size: ${item.size}</div>
-          ${item.flavor ? `<div>Flavor: ${item.flavor}</div>` : ""}
-          ${item.notes ? `<div>Notes: ${item.notes}</div>` : ""}
-          <div>Quantity: ${item.quantity}</div>
-          <div>Price: $${itemTotal.toFixed(2)}</div>
-        </div>
-        <button onclick="removeFromCart(${i})" class="remove-btn">Remove</button>
-      </div>
-    `;
-    })
-    .join("");
-
-  if (cartCount) cartCount.textContent = cart.length;
-  if (cartTotal) cartTotal.textContent = `$${total.toFixed(2)}`;
-
-  checkShippingAvailability();
-}
-
-function removeFromCart(index) {
-  cart.splice(index, 1);
-  updateCart();
-}
-
-function clearCart() {
-  cart = [];
-  updateCart();
-}
-
-// ========== SHIPPING AVAILABILITY ==========
-function checkShippingAvailability() {
-  const shippingNotice = document.getElementById("shippingNotice");
-  if (!shippingNotice) return;
-
-  const hasNonShippable = cart.some((item) => !item.canShip);
-
-  if (hasNonShippable) {
-    shippingNotice.style.display = "block";
-    shippingNotice.innerHTML =
-      "⚠️ Some items in your cart require local pickup only.";
-  } else {
-    shippingNotice.style.display = "none";
-  }
-}
-
-// ========== PAYMENT DETAILS ==========
-const paymentInfo = {
-  Cash: "Pay 50% deposit now to secure your appointment. Bring remaining 50% at pickup.",
-  "Cash App":
-    "Send 50% deposit to: <a href='https://cash.app/$DanaBlueMoonHaven'>$DanaBlueMoonHaven</a>",
-  Venmo:
-    "Send 50% deposit to: <a href='https://venmo.com/BlueMoonHaven'>@BlueMoonHaven</a> to secure your appointment.",
-  PayPal:
-    "Send 50% deposit to: <a href='https://paypal.me/BlueMoonHaven'>@BlueMoonHaven</a> to secure your appointment.",
-  Zelle:
-    "Use Zelle to send 50% deposit to: <strong>805-709-4680</strong> to secure your appointment.",
-};
-
-function updatePaymentDetails() {
-  const selectedMethod = document.querySelector(
-    'input[name="payment_method"]:checked'
-  )?.value;
-  const detailsDiv = document.getElementById("paymentDetails");
-  const contentDiv = document.getElementById("paymentDetailsContent");
-
-  if (selectedMethod && paymentInfo[selectedMethod]) {
-    contentDiv.innerHTML = paymentInfo[selectedMethod];
-    detailsDiv.style.display = "block";
-  } else {
-    detailsDiv.style.display = "none";
-  }
 }
 
 // ========== INITIALIZE ON PAGE LOAD ==========
