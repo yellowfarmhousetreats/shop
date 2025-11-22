@@ -380,7 +380,7 @@ function openProductModal(index) {
     }
   };
   modal.addEventListener("keydown", keyHandler);
-  modal._keyHandler = keyHandler;  // Store reference for later removal
+  modal._keyHandler = keyHandler; // Store reference for later removal
   modal.showModal();
 }
 
