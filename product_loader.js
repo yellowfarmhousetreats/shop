@@ -349,21 +349,23 @@ function openProductModal(index) {
   const modal = document.getElementById("productModal");
   modal.addEventListener("click", handleBackdropClick);
   // Accessibility: assign id for title reference
-  const nameEl = modalContent.querySelector('.product-name');
-  if (nameEl) nameEl.id = 'modalTitle';
+  const nameEl = modalContent.querySelector(".product-name");
+  if (nameEl) nameEl.id = "modalTitle";
   // Focus first interactive element
   setTimeout(() => {
-    const first = modalContent.querySelector('button, [href], input, select, textarea');
+    const first = modalContent.querySelector("button, [href], input, select, textarea");
     (first || modal).focus();
   }, 0);
   // Simple focus trap & escape close
   const keyHandler = (e) => {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       closeProductModal();
       return;
     }
-    if (e.key === 'Tab') {
-      const focusable = Array.from(modalContent.querySelectorAll('button, [href], input, select, textarea'));
+    if (e.key === "Tab") {
+      const focusable = Array.from(
+        modalContent.querySelectorAll("button, [href], input, select, textarea")
+      );
       if (!focusable.length) return;
       const idx = focusable.indexOf(document.activeElement);
       if (e.shiftKey && idx === 0) {
@@ -375,8 +377,8 @@ function openProductModal(index) {
       }
     }
   };
-  modal.addEventListener('keydown', keyHandler);
-  modal.dataset.keyHandlerAttached = 'true';
+  modal.addEventListener("keydown", keyHandler);
+  modal.dataset.keyHandlerAttached = "true";
   modal.showModal();
 }
 

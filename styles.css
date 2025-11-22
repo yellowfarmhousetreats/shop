@@ -199,7 +199,8 @@ body {
 }
 
 @keyframes cartPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -208,7 +209,8 @@ body {
 }
 
 @keyframes badgeBounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   25% {

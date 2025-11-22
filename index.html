@@ -215,12 +215,12 @@
       function animateCartIcon() {
         const cartIcon = document.querySelector(".cart-icon");
         const badge = document.getElementById("cartBadge");
-        
+
         if (cartIcon) {
           cartIcon.classList.add("pulse");
           setTimeout(() => cartIcon.classList.remove("pulse"), 600);
         }
-        
+
         if (badge) {
           badge.classList.add("bounce");
           setTimeout(() => badge.classList.remove("bounce"), 600);
