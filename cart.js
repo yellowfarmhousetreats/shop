@@ -107,9 +107,9 @@ function updateCart() {
     updateCartBadge();
   }
 
+  saveCart();
   checkShippingAvailability();
   calculateTotals();
-  saveCart();
 
   // Handle deposit info for items requiring deposit
   const depositInfo = document.getElementById("depositPickupInfo");
