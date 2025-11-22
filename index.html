@@ -55,6 +55,30 @@
                     <div class="footnote-item"><strong>^</strong> = Can be made Sugar Free</div>
                 </div>
 
+                <!-- PRODUCT CONTROLS -->
+                <div class="product-controls">
+                    <div class="search-sort-row">
+                        <input type="text" id="productSearch" placeholder="Search products...">
+                        <label for="productSort">Sort by:</label>
+                        <select id="productSort">
+                            <option value="name">Sort by Name</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                        </select>
+                    </div>
+                    <div class="category-tabs" id="categoryTabs">
+                        <!-- Category tabs will be generated here -->
+                    </div>
+                    <div class="dietary-filters">
+                        <label><input type="checkbox" id="filter-gf"> Show only Gluten-Free options</label>
+                        <label><input type="checkbox" id="filter-sf"> Show only Sugar-Free options</label>
+                    </div>
+                    <div class="loading-spinner hidden" id="loadingSpinner">
+                        <div class="spinner"></div>
+                        Loading products...
+                    </div>
+                </div>
+
                 <!-- PRODUCT CARDS GRID -->
                 <div class="products-grid" id="productsGrid">
                     <!-- Product cards will be generated here -->

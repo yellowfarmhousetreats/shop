@@ -17,19 +17,63 @@ async function loadProducts() {
 
 // ========== INITIALIZE PRODUCTS ==========
 async function initializeProducts() {
+  const spinner = document.getElementById("loadingSpinner");
+  spinner.classList.remove("hidden");
+
   await loadProducts();
 
-  const grid = document.getElementById("productsGrid");
-  if (!grid) return;
+  spinner.classList.add("hidden");
 
+  generateCategoryTabs();
+  displayProducts(menuItems);
+
+  // Add event listeners
+  document.getElementById("productSearch").addEventListener("input", filterAndDisplay);
+  document.getElementById("productSort").addEventListener("change", filterAndDisplay);
+  document.getElementById("filter-gf").addEventListener("change", filterAndDisplay);
+  document.getElementById("filter-sf").addEventListener("change", filterAndDisplay);
+}
+
+function generateCategoryTabs() {
+  const tabContainer = document.getElementById("categoryTabs");
+  tabContainer.innerHTML = "";
+
+  // All tab
+  const allTab = document.createElement("button");
+  allTab.className = "tab-button active";
+  allTab.textContent = "All";
+  allTab.dataset.category = "all";
+  allTab.addEventListener("click", setActiveTab);
+  tabContainer.appendChild(allTab);
+
+  // Get unique categories
+  const categories = [...new Set(menuItems.map(item => item.category))];
+  for (const cat of categories) {
+    const tab = document.createElement("button");
+    tab.className = "tab-button";
+    tab.textContent = cat;
+    tab.dataset.category = cat;
+    tab.addEventListener("click", setActiveTab);
+    tabContainer.appendChild(tab);
+  }
+}
+
+function setActiveTab(event) {
+  for (const btn of document.querySelectorAll(".tab-button")) {
+    btn.classList.remove("active");
+  }
+  event.target.classList.add("active");
+  filterAndDisplay();
+}
+
+function displayProducts(products) {
+  const grid = document.getElementById("productsGrid");
   grid.innerHTML = "";
 
-  // Group products by category
+  // Group by category
   const productsByCategory = {};
-  for (const item of menuItems) {
-    if (!productsByCategory[item.category]) {
-      productsByCategory[item.category] = [];
-    }
+  for (const item of products) {
+    if (!productsByCategory[item.category]) productsByCategory[item.category] = [];
     productsByCategory[item.category].push(item);
   }
 
@@ -44,6 +88,11 @@ async function initializeProducts() {
 }
 
 function createCategorySection(category, items, startIndex) {
+  if (category === "Cookie") {
+    return createCookieSections(items, startIndex);
+  }
+
+  // Normal category
   const section = document.createElement("div");
   section.className = "category-section";
 
@@ -59,11 +108,43 @@ function createCategorySection(category, items, startIndex) {
   for (const item of items) {
     const card = createProductCard(item, index);
     categoryGrid.appendChild(card);
-    updateDietaryOptions(index);
     index++;
   }
 
   section.appendChild(categoryGrid);
+  return { node: section, nextIndex: index };
+}
+
+function createCookieSections(items, startIndex) {
+  const section = document.createElement("div");
+  section.className = "category-section";
+
+  const title = document.createElement("h2");
+  title.className = "category-title";
+  title.textContent = "Cookies";
+  section.appendChild(title);
+
+  const subcategories = ["simple", "fancy", "complex"];
+  let index = startIndex;
+  for (const sub of subcategories) {
+    const subItems = items.filter(item => item.subcategory === sub);
+    if (subItems.length > 0) {
+      const subTitle = document.createElement("h3");
+      subTitle.className = "subcategory-title";
+      subTitle.textContent = `${sub.charAt(0).toUpperCase() + sub.slice(1)} Cookies`;
+      section.appendChild(subTitle);
+
+      const subGrid = document.createElement("div");
+      subGrid.className = "products-grid";
+
+      for (const item of subItems) {
+        const card = createProductCard(item, index);
+        subGrid.appendChild(card);
+        index++;
+      }
+      section.appendChild(subGrid);
+    }
+  }
   return { node: section, nextIndex: index };
 }
 
@@ -73,15 +154,17 @@ function createProductCard(item, index) {
   const card = document.createElement("div");
   card.className = "product-card";
 
+  const imgWrap = document.createElement("div");
+  imgWrap.className = "product-image";
   if (item.image) {
-    const imgWrap = document.createElement("div");
-    imgWrap.className = "product-image";
     const img = document.createElement("img");
     img.src = item.image;
-    img.alt = item.name || "";
+    img.alt = item.name || "Product Image";
     imgWrap.appendChild(img);
-    card.appendChild(imgWrap);
+  } else {
+    imgWrap.innerHTML = '<div class="image-placeholder">Image Coming Soon</div>';
   }
+  card.appendChild(imgWrap);
 
   const header = document.createElement("div");
   header.className = "product-header";
@@ -94,6 +177,22 @@ function createProductCard(item, index) {
   header.appendChild(nameDiv);
   header.appendChild(priceDiv);
   card.appendChild(header);
+
+  const badges = document.createElement("div");
+  badges.className = "dietary-badges";
+  if (item.canGlutenfree) {
+    const gfBadge = document.createElement("span");
+    gfBadge.className = "badge gluten-free";
+    gfBadge.textContent = "Gluten Free";
+    badges.appendChild(gfBadge);
+  }
+  if (item.canSugarfree) {
+    const sfBadge = document.createElement("span");
+    sfBadge.className = "badge sugar-free";
+    sfBadge.textContent = "Sugar Free";
+    badges.appendChild(sfBadge);
+  }
+  card.appendChild(badges);
 
   const form = document.createElement("div");
   form.className = "product-form";
@@ -169,45 +268,6 @@ function createProductCard(item, index) {
   qtyGroup.appendChild(qtyInput);
   form.appendChild(qtyGroup);
 
-  // Dietary section
-  const dietarySection = document.createElement("div");
-  dietarySection.className = "dietary-section";
-  dietarySection.id = `dietary-${index}`;
-
-  const dietaryCheckboxes = document.createElement("div");
-  dietaryCheckboxes.className = "dietary-checkboxes";
-
-  const glutenOption = document.createElement("div");
-  glutenOption.className = "dietary-option";
-  glutenOption.id = `gluten-option-${index}`;
-  const glutenInput = document.createElement("input");
-  glutenInput.type = "checkbox";
-  glutenInput.id = `gluten-${index}`;
-  glutenInput.className = "gluten-checkbox";
-  const glutenLabel = document.createElement("label");
-  glutenLabel.htmlFor = `gluten-${index}`;
-  glutenLabel.textContent = "Gluten Free";
-  glutenOption.appendChild(glutenInput);
-  glutenOption.appendChild(glutenLabel);
-
-  const sugarOption = document.createElement("div");
-  sugarOption.className = "dietary-option";
-  sugarOption.id = `sugar-option-${index}`;
-  const sugarInput = document.createElement("input");
-  sugarInput.type = "checkbox";
-  sugarInput.id = `sugar-${index}`;
-  sugarInput.className = "sugar-checkbox";
-  const sugarLabel = document.createElement("label");
-  sugarLabel.htmlFor = `sugar-${index}`;
-  sugarLabel.textContent = "Sugar Free";
-  sugarOption.appendChild(sugarInput);
-  sugarOption.appendChild(sugarLabel);
-
-  dietaryCheckboxes.appendChild(glutenOption);
-  dietaryCheckboxes.appendChild(sugarOption);
-  dietarySection.appendChild(dietaryCheckboxes);
-  form.appendChild(dietarySection);
-
   const addBtn = document.createElement("button");
   addBtn.className = "add-to-cart-btn";
   addBtn.textContent = "Add to Cart";
@@ -239,39 +299,49 @@ function updatePrice(index) {
   priceDisplay.textContent = `from $${price.toFixed(2)}`;
 }
 
-function updateDietaryOptions(index) {
-  const item = menuItems[index];
-  const dietarySection = document.getElementById(`dietary-${index}`);
-  const glutenOption = document.getElementById(`gluten-option-${index}`);
-  const sugarOption = document.getElementById(`sugar-option-${index}`);
-  
-  if (item.canGlutenfree) {
-    glutenOption.classList.remove('hidden');
-  } else {
-    glutenOption.classList.add('hidden');
+function filterAndDisplay() {
+  let filtered = menuItems.slice(); // copy
+
+  // Category filter
+  const activeTab = document.querySelector(".tab-button.active");
+  const category = activeTab ? activeTab.dataset.category : "all";
+  if (category !== "all") {
+    filtered = filtered.filter(item => item.category === category);
   }
-  
-  if (item.canSugarfree) {
-    sugarOption.classList.remove('hidden');
-  } else {
-    sugarOption.classList.add('hidden');
+
+  // Search filter
+  const searchQuery = document.getElementById("productSearch").value.toLowerCase();
+  if (searchQuery) {
+    filtered = filtered.filter(item => item.name.toLowerCase().includes(searchQuery));
   }
-  
-  if (item.canGlutenfree || item.canSugarfree) {
-    dietarySection.classList.remove('hidden');
-  } else {
-    dietarySection.classList.add('hidden');
+
+  // Dietary filters
+  const gfFilter = document.getElementById("filter-gf").checked;
+  const sfFilter = document.getElementById("filter-sf").checked;
+  if (gfFilter || sfFilter) {
+    filtered = filtered.filter(item => {
+      if (gfFilter && !item.canGlutenfree) return false;
+      if (sfFilter && !item.canSugarfree) return false;
+      return true;
+    });
   }
+
+  // Sort
+  const sortBy = document.getElementById("productSort").value;
+  filtered.sort((a, b) => {
+    if (sortBy === "name") return a.name.localeCompare(b.name);
+    const priceA = getDefaultPrice(a);
+    const priceB = getDefaultPrice(b);
+    if (sortBy === "price-low") return priceA - priceB;
+    if (sortBy === "price-high") return priceB - priceA;
+    return 0;
+  });
+
+  displayProducts(filtered);
 }
 
 // ========== DIETARY FILTERING ==========
-function updateDietaryFilters() {
-  // Removed as dietary tags are no longer in JSON
-}
-
-function filterProducts() {
-  // Removed as dietary tags are no longer in JSON
-}
+// Removed as replaced with badges and filters
 
 // ========== INITIALIZE ON PAGE LOAD ==========
 document.addEventListener("DOMContentLoaded", initializeProducts);
