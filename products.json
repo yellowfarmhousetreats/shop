@@ -158,16 +158,40 @@
     "image": "images/muffins.jpg"
   },
   {
-    "name": "Cupcakes",
+    "name": "Chocolate Lava Cupcakes",
     "sizes": ["Half Dozen", "Dozen"],
     "sizePrice": { "Half Dozen": 15, "Dozen": 28 },
-    "flavors": ["Chocolate Lava", "Ding Dongs", "Holiday Specials"],
+    "flavors": ["Standard"],
     "canGlutenfree": true,
     "canSugarfree": true,
-    "category": "Cupcake",
+    "category": "Cake",
     "canShip": false,
     "weight": 0,
-    "image": "images/cupcakes.jpg"
+    "image": "images/chocolate-lava-cupcakes.jpg"
+  },
+  {
+    "name": "Ding Dongs Cupcakes",
+    "sizes": ["Half Dozen", "Dozen"],
+    "sizePrice": { "Half Dozen": 15, "Dozen": 28 },
+    "flavors": ["Standard"],
+    "canGlutenfree": false,
+    "canSugarfree": false,
+    "category": "Cake",
+    "canShip": false,
+    "weight": 0,
+    "image": "images/ding-dongs-cupcakes.jpg"
+  },
+  {
+    "name": "Holiday Specials Cupcakes",
+    "sizes": ["Half Dozen", "Dozen"],
+    "sizePrice": { "Half Dozen": 15, "Dozen": 28 },
+    "flavors": ["Standard"],
+    "canGlutenfree": false,
+    "canSugarfree": false,
+    "category": "Cake",
+    "canShip": false,
+    "weight": 0,
+    "image": "images/holiday-specials-cupcakes.jpg"
   },
   {
     "name": "Peanut Butter Cookies",
