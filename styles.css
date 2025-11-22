@@ -1208,3 +1208,102 @@
     border-bottom: 2px solid #d4af37;
     padding-bottom: 8px;
 }
+
+/* PRODUCT GRID */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.product-grid-card {
+    cursor: pointer;
+    border: 2px solid #d4c5b9;
+    background: #faf8f3;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.product-grid-card:hover {
+    border-color: #d4af37;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.product-grid-card .product-image {
+    height: 120px;
+    background: #d4c5b9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.product-grid-card .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-grid-card .product-info {
+    padding: 10px;
+}
+
+.product-grid-card .product-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 0.95em;
+}
+
+.product-grid-card .product-price {
+    color: #8b7220;
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.product-grid-card .dietary-badges {
+    margin-top: 5px;
+}
+
+/* MODAL */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+    position: relative;
+    padding: 20px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+}

@@ -86,6 +86,14 @@
                     <!-- Product cards will be generated here -->
                 </div>
 
+                <!-- Product Modal -->
+                <div id="productModal" class="modal-overlay hidden" onclick="closeProductModal()">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <button class="modal-close" onclick="closeProductModal()">&times;</button>
+                        <div id="modalContent"></div>
+                    </div>
+                </div>
+
                 <!-- ADDED ITEMS SUMMARY -->
                 <div class="order-items" id="orderItems">
                     <div class="empty-items">No items added yet</div>

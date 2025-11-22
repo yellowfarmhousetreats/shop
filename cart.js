@@ -14,11 +14,23 @@ function loadCart() {
 
 function addToCart(index) {
   const item = menuItems[index];
-  const size = document.getElementById(`size-${index}`).value;
-  const flavor = document.getElementById(`flavor-${index}`).value;
-  const qty = Number.parseInt(document.getElementById(`qty-${index}`).value) || 1;
-  const glutenFree = document.getElementById(`gluten-${index}`)?.checked || false;
-  const sugarFree = document.getElementById(`sugar-${index}`)?.checked || false;
+  let size, flavor, qty, glutenFree, sugarFree;
+
+  const modalOpen = !document.getElementById('productModal').classList.contains('hidden');
+
+  if (modalOpen) {
+    size = document.getElementById('modal-size').value;
+    flavor = document.getElementById('modal-flavor')?.value || 'Standard';
+    qty = Number.parseInt(document.getElementById('modal-qty').value) || 1;
+    glutenFree = document.getElementById('modal-gf')?.checked || false;
+    sugarFree = document.getElementById('modal-sf')?.checked || false;
+  } else {
+    size = document.getElementById(`size-${index}`).value;
+    flavor = document.getElementById(`flavor-${index}`)?.value || 'Standard';
+    qty = Number.parseInt(document.getElementById(`qty-${index}`).value) || 1;
+    glutenFree = document.getElementById(`gf-${index}`)?.checked || false;
+    sugarFree = document.getElementById(`sf-${index}`)?.checked || false;
+  }
 
   let price = item.sizePrice[size.replaceAll(' ', '_')];
   let totalPrice = price * qty;
@@ -42,7 +54,11 @@ function addToCart(index) {
   saveCart();
   showSuccess(`Added ${qty}x ${item.name} to order!`);
   
-  document.getElementById(`qty-${index}`).value = 1;
+  if (!modalOpen) {
+    document.getElementById(`qty-${index}`).value = 1;
+  } else {
+    closeProductModal();
+  }
 }
 
 function updateCart() {
