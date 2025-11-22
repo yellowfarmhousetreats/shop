@@ -348,12 +348,46 @@ function openProductModal(index) {
 
   const modal = document.getElementById("productModal");
   modal.addEventListener("click", handleBackdropClick);
+  // Accessibility: assign id for title reference
+  const nameEl = modalContent.querySelector('.product-name');
+  if (nameEl) nameEl.id = 'modalTitle';
+  // Focus first interactive element
+  setTimeout(() => {
+    const first = modalContent.querySelector('button, [href], input, select, textarea');
+    (first || modal).focus();
+  }, 0);
+  // Simple focus trap & escape close
+  const keyHandler = (e) => {
+    if (e.key === 'Escape') {
+      closeProductModal();
+      return;
+    }
+    if (e.key === 'Tab') {
+      const focusable = Array.from(modalContent.querySelectorAll('button, [href], input, select, textarea'));
+      if (!focusable.length) return;
+      const idx = focusable.indexOf(document.activeElement);
+      if (e.shiftKey && idx === 0) {
+        e.preventDefault();
+        focusable[focusable.length - 1].focus();
+      } else if (!e.shiftKey && idx === focusable.length - 1) {
+        e.preventDefault();
+        focusable[0].focus();
+      }
+    }
+  };
+  modal.addEventListener('keydown', keyHandler);
+  modal.dataset.keyHandlerAttached = 'true';
   modal.showModal();
 }
 
 function closeProductModal() {
   const modal = document.getElementById("productModal");
   modal.removeEventListener("click", handleBackdropClick);
+  if (modal.dataset.keyHandlerAttached) {
+    // Remove all keydown handlers by cloning (quick way without tracking reference)
+    const clone = modal.cloneNode(true);
+    modal.parentNode.replaceChild(clone, modal);
+  }
   modal.close();
   document.getElementById("modalContent").innerHTML = "";
 }

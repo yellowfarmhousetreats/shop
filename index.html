@@ -52,14 +52,14 @@
       <!-- Sticky Navigation Header -->
       <header class="sticky-header">
         <div class="nav-container">
-          <a href="tel:+18057094686" class="phone-btn" aria-label="Call us">
+          <a href="tel:+18057094686" class="phone-btn" aria-label="Call Yellow Farmhouse Treats">
             📞 <span class="phone-text">Call</span>
           </a>
           <a href="#top" class="brand-name" onclick="scrollToTop(event)">
             🌾 Yellow Farmhouse Treats
           </a>
-          <a href="cart.html" class="cart-icon" aria-label="Go to cart">
-            🛒 <span class="cart-badge" id="cartBadge">0</span>
+          <a href="cart.html" class="cart-icon" aria-label="View cart and checkout">
+            🛒 <span class="cart-badge" id="cartBadge" aria-live="polite" aria-label="Items in cart">0</span>
           </a>
         </div>
         <div class="header-subtitle">Fresh Baked Goods</div>
@@ -130,9 +130,9 @@
           </div>
 
           <!-- Product Modal -->
-          <dialog id="productModal">
-            <div class="modal-content">
-              <button class="modal-close" onclick="closeProductModal()">&times;</button>
+          <dialog id="productModal" aria-modal="true" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalContent">
+            <div class="modal-content" tabindex="-1">
+              <button class="modal-close" aria-label="Close product details" onclick="closeProductModal()">&times;</button>
               <div id="modalContent"></div>
             </div>
           </dialog>
@@ -160,8 +160,8 @@
       </div>
     </div>
 
-    <script src="product_loader.js"></script>
-    <script src="cart.js"></script>
+    <script src="product_loader.min.js?v=dev"></script>
+    <script src="cart.min.js?v=dev"></script>
 
     <!-- Navigation JavaScript -->
     <script>
